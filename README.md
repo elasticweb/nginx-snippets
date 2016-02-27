@@ -151,13 +151,13 @@ gzip_min_length 256;
 gzip_proxied any;
 gzip_vary on;
 gzip_types
-text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml
-text/javascript application/javascript application/x-javascript
-text/x-json application/json application/x-web-app-manifest+json
-text/css text/plain text/x-component
-font/opentype application/x-font-ttf application/vnd.ms-fontobject
-image/x-icon;
-gzip_disable  "msie6";
+  text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml
+  text/javascript application/javascript application/x-javascript
+  text/x-json application/json application/x-web-app-manifest+json
+  text/css text/plain text/x-component
+  font/opentype application/x-font-ttf application/vnd.ms-fontobject
+  image/x-icon;
+gzip_disable "msie6";
 ```
 ### Кэш файлов
 Если у вас кешируется большое количество статических файлов через Nginx, то кэширование метаданных этих файлов позволит сэкономить время задержки. 
