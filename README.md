@@ -264,7 +264,7 @@ location @track {
 Самый простой и наиболее известный способ кросс-доменного запроса на ваш сервер: 
 ```
 location ~* \.(eot|ttf|woff) {
-    add_header Access-Control-Allow-Origin *;
+  add_header Access-Control-Allow-Origin *;
 }
 ```
 ## Источники
