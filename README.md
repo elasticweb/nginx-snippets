@@ -40,163 +40,163 @@
 ##Location блок на PHP
 Простой шаблон для быстрой и легкой установки PHP, FPM или CGI на ваш сайт.
 ```
-	location ~ \.php$ {
-	  try_files $uri =404;
-	  client_max_body_size 64m;
-	  client_body_buffer_size 128k;
-	  include fastcgi_params;
-	  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-	  fastcgi_pass unix:/path/to/php.sock;
-	}
+location ~ \.php$ {
+  try_files $uri =404;
+  client_max_body_size 64m;
+  client_body_buffer_size 128k;
+  include fastcgi_params;
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  fastcgi_pass unix:/path/to/php.sock;
+}
 ```
 ##Rewrite и Redirection
 ### Force www
 [Корректный способ](http://nginx.org/en/docs/http/converting_rewrite_rules.html) определить удаленный сервер по домену без *www* и перенаправить его c *www*:
 ```
-	server {
-	    listen 80;
-	    server_name example.org;
-	    return 301 $scheme://www.example.org$request_uri;
-	}
+server {
+  listen 80;
+  server_name example.org;
+  return 301 $scheme://www.example.org$request_uri;
+}
 
-	server {
-	    listen 80;
-	    server_name www.example.org;
-	    ...
-	}
+server {
+  listen 80;
+  server_name www.example.org;
+  ...
+}
 ```
 *Также работает для HTTPS *
 
 ###Force no-www
 Корректный способ определить удаленный сервер по домену c *www* и перенаправить его без *www*:
 ```
-	server {
-	    listen 80;
-	    server_name example.org;
-	}
+server {
+  listen 80;
+  server_name example.org;
+}
 	
-	server {
-	    listen 80;
-	    server_name www.example.org;
-	    return 301 $scheme://example.org$request_uri;
-	}
+server {
+  listen 80;
+  server_name www.example.org;
+  return 301 $scheme://example.org$request_uri;
+}
 ```
 ### Force HTTPS
 Способ для переадресации с HTTP на HTTPS:  
 ```
-	server {
-	    listen 80;
-	    return 301 https://$host$request_uri;
-	}
+server {
+  listen 80;
+  return 301 https://$host$request_uri;
+}
 	
-	server {
-	    listen 443 ssl;
+server {
+  listen 443 ssl;
 	
-	    # let the browsers know that we only accept HTTPS
-	    add_header Strict-Transport-Security max-age=2592000;
+  # let the browsers know that we only accept HTTPS
+  add_header Strict-Transport-Security max-age=2592000;
 	
-	    ...
-	}
+  ...
+}
 ```
 ###Force Trailing Slash
 Данная строка добавляет слэш `/` в конце каждого URL, только в том случаее если в URL нет точки или параметров. Тоесть после *example.com/index.php* или *example.com/do?some=123* слэш не поставится.  
 ```
-	rewrite ^([^.\?]*[^/])$ $1/ permanent;
+rewrite ^([^.\?]*[^/])$ $1/ permanent;
 ```
 ### Редирект на страницу
 ```
-	server {
-	    location = /oldpage.html {
-	        return 301 http://example.org/newpage.html;
-	    }
-	}
+server {
+  location = /oldpage.html {
+    return 301 http://example.org/newpage.html;
+  }
+}
 ```
 ### Редирект на сайт
 ```
-	server {
-	    server_name old-site.com
-	    return 301 $scheme://new-site.com$request_uri;
-	}
+server {
+  server_name old-site.com
+  return 301 $scheme://new-site.com$request_uri;
+}
 ```
 ### Редирект на определенный путь в URI
 ```
-	location /old-site {
-	    rewrite ^/old-site/(.*) http://example.org/new-site/$1 permanent;
-	}
+location /old-site {
+  rewrite ^/old-site/(.*) http://example.org/new-site/$1 permanent;
+}
 ```
 ##Производительность
 
 ###Кэширование
 Навсегда разрешить браузерам кэшировать статические содержимое. Nginx установит оба заголовка: Expires и Cache-Control.
 ```
-	location /static {
-	    root /data;
-	    expires max;
-	}
+location /static {
+  root /data;
+  expires max;
+}
 ```
 Запретить кэширование браузерам (например для отслеживания запросов) можно следующим образом: 
 ```
-	location = /empty.gif {
-	    empty_gif;
-	    expires -1;
-	}
+location = /empty.gif {
+  empty_gif;
+  expires -1;
+}
 ```
 ###Gzip сжатие
 ```
-	gzip  on;
-	gzip_buffers 16 8k;
-	gzip_comp_level 6;
-	gzip_http_version 1.1;
-	gzip_min_length 256;
-	gzip_proxied any;
-	gzip_vary on;
-	gzip_types
-	    text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml
-	    text/javascript application/javascript application/x-javascript
-	    text/x-json application/json application/x-web-app-manifest+json
-	    text/css text/plain text/x-component
-	    font/opentype application/x-font-ttf application/vnd.ms-fontobject
-	    image/x-icon;
-	gzip_disable  "msie6";
+gzip  on;
+gzip_buffers 16 8k;
+gzip_comp_level 6;
+gzip_http_version 1.1;
+gzip_min_length 256;
+gzip_proxied any;
+gzip_vary on;
+gzip_types
+text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml
+text/javascript application/javascript application/x-javascript
+text/x-json application/json application/x-web-app-manifest+json
+text/css text/plain text/x-component
+font/opentype application/x-font-ttf application/vnd.ms-fontobject
+image/x-icon;
+gzip_disable  "msie6";
 ```
 ### Кэш файлов
 Если у вас кешируется большое количество статических файлов через Nginx, то кэширование метаданных этих файлов позволит сэкономить время задержки. 
 ```
-	open_file_cache max=1000 inactive=20s;
-	open_file_cache_valid 30s;
-	open_file_cache_min_uses 2;
-	open_file_cache_errors on;
+open_file_cache max=1000 inactive=20s;
+open_file_cache_valid 30s;
+open_file_cache_min_uses 2;
+open_file_cache_errors on;
 ```
 ### SSL кэш
 Подключение SSL кэширования позволит возобновлять SSL сессии и сократить время к следующим обращениям к SSL/TLS протоколу.
 ```
-	ssl_session_cache shared:SSL:10m;
-	ssl_session_timeout 10m; 
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m; 
 ```
 ### Поддержка Upstream
 Активация кеширования c использованием Upstream подключений: 
 ```
-	upstream backend {
-	    server 127.0.0.1:8080;
-	    keepalive 32;
-	}
+upstream backend {
+  server 127.0.0.1:8080;
+  keepalive 32;
+}
 	
-	server {
-	    ...
-	    location /api/ {
-	        proxy_pass http://backend;
-	        proxy_http_version 1.1;
-	        proxy_set_header Connection "";
-	    }
-	}
+server {
+  ...
+  location /api/ {
+    proxy_pass http://backend;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+  }
+}
 ```
 ###Мониторинг
 По умолчанию [Stub Status](http://nginx.org/ru/docs/http/ngx_http_stub_status_module.html) модуль не собирается, его сборку необходимо разрешить с помощью конфигурационного параметра —with-http_stub_status_module и активировать с помощью: 
 ```
-	location /status {
-	    stub_status on;
-	    access_log off;
-	}
+location /status {
+  stub_status on;
+  access_log off;
+}
 ```
 Данная настройка позволит вам получать статус в обычном текстовом формате по общему количеству запросов и клиентским подключениям (принятым, обработанным, активным).
 
@@ -217,21 +217,21 @@
 ###Активация базовой аунтификации
 Для начала вам потребуется создать пароль и сохранить его в обычной текстовом файле: 
 ```
-	имя:пароль
+имя:пароль
 ```
 
 Затем установить найтройки для server/location блока, который необходимо защитить: 
 ```
-	auth_basic "This is Protected";
-	auth_basic_user_file /path/to/password-file;
+auth_basic "This is Protected";
+auth_basic_user_file /path/to/password-file;
 ```
 ###Открыть только локальный доступ
 ```
-	location /local {
-	    allow 127.0.0.1;
-	    deny all;
-	    ...
-	}
+location /local {
+  allow 127.0.0.1;
+  deny all;
+  ...
+}
 ```	
 ###Защита SSL настроек 
 * Отключить SSLv3, если он включен по умолчанию. Это предотвратит [POODLE SSL Attack](http://nginx.com/blog/nginx-poodle-ssl/).
@@ -248,16 +248,16 @@
 ###Подзапросы после завершения
 Бывают ситуации, когда вам необходимо передать запрос на другой бэкэнд **в дополнении или после его обработки**. Первый случай -  отслеживать количество завершенных загрузок путем вызова API, после того как пользователь скачал файл. Второй случай  -отслеживать запрос, к которому вы бы хотели вернуться как можно быстрее (возможно с пустым .gif) и сделать соответствующие записи в фоновом режиме.  [**post_action**](http://wiki.nginx.org/HttpCoreModule#post_action), который позволяет вам определить подзапрос и будет отклонен по окончанию текущего запроса - является [лучшим решением](http://mailman.nginx.org/pipermail/nginx/2008-April/004524.html) для обоих вариантов.
 ```
-	location = /empty.gif {
-	    empty_gif;
-	    expires -1;
-	    post_action @track; 
-	}
+location = /empty.gif {
+  empty_gif;
+  expires -1;
+  post_action @track; 
+}
 	
-	location @track {
-	    internal;
-	    proxy_pass http://tracking-backend;
-	}
+location @track {
+  internal;
+  proxy_pass http://tracking-backend;
+}
 ```
 ###Распределение ресурсов между источниками
 
