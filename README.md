@@ -1,6 +1,6 @@
 #Полезные шаблоны конфигов для Nginx
 
-Переведо и дополнено на основе репозитория [nginx-conf](https://github.com/lebinh/nginx-conf) от [@lebinh](https://github.com/lebinh)
+Переведено и дополнено на основе репозитория [nginx-conf](https://github.com/lebinh/nginx-conf) от [@lebinh](https://github.com/lebinh)
 
 ## Содержание
 - [Команды Nginx](#Команды-nginx)
@@ -31,10 +31,10 @@
 
 
 ##Команды Nginx
-Основные команды для выполнения базовый операций во время работы Nginx. 
+Основные команды для выполнения базовый операций во время работы Nginx.
 
-* `nginx -V` - проверить версию Nginx, его скомпилированные параметры конфигурации и установленные модули. 
-* `nginx -t` - протестировать конфигурационный файл и проверить его расположение. 
+* `nginx -V` - проверить версию Nginx, его скомпилированные параметры конфигурации и установленные модули.
+* `nginx -t` - протестировать конфигурационный файл и проверить его расположение.
 * `nginx -s reload` - перезапустить конфигурационный файл без перезагрузки Nginx.
 
 ##Location блок на PHP
@@ -74,7 +74,7 @@ server {
   listen 80;
   server_name example.org;
 }
-	
+
 server {
   listen 80;
   server_name www.example.org;
@@ -88,13 +88,13 @@ server {
   listen 80;
   return 301 https://$host$request_uri;
 }
-	
+
 server {
   listen 443 ssl;
-	
+
   # let the browsers know that we only accept HTTPS
   add_header Strict-Transport-Security max-age=2592000;
-	
+
   ...
 }
 ```
@@ -134,7 +134,7 @@ location /static {
   expires max;
 }
 ```
-Запретить кэширование браузерам (например для отслеживания запросов) можно следующим образом: 
+Запретить кэширование браузерам (например для отслеживания запросов) можно следующим образом:
 ```
 location = /empty.gif {
   empty_gif;
@@ -160,7 +160,7 @@ gzip_types
 gzip_disable "msie6";
 ```
 ### Кэш файлов
-Если у вас кешируется большое количество статических файлов через Nginx, то кэширование метаданных этих файлов позволит сэкономить время задержки. 
+Если у вас кешируется большое количество статических файлов через Nginx, то кэширование метаданных этих файлов позволит сэкономить время задержки.
 ```
 open_file_cache max=1000 inactive=20s;
 open_file_cache_valid 30s;
@@ -171,16 +171,16 @@ open_file_cache_errors on;
 Подключение SSL кэширования позволит возобновлять SSL сессии и сократить время к следующим обращениям к SSL/TLS протоколу.
 ```
 ssl_session_cache shared:SSL:10m;
-ssl_session_timeout 10m; 
+ssl_session_timeout 10m;
 ```
 ### Поддержка Upstream
-Активация кеширования c использованием Upstream подключений: 
+Активация кеширования c использованием Upstream подключений:
 ```
 upstream backend {
   server 127.0.0.1:8080;
   keepalive 32;
 }
-	
+
 server {
   ...
   location /api/ {
@@ -191,7 +191,7 @@ server {
 }
 ```
 ###Мониторинг
-По умолчанию [Stub Status](http://nginx.org/ru/docs/http/ngx_http_stub_status_module.html) модуль не собирается, его сборку необходимо разрешить с помощью конфигурационного параметра —with-http_stub_status_module и активировать с помощью: 
+По умолчанию [Stub Status](http://nginx.org/ru/docs/http/ngx_http_stub_status_module.html) модуль не собирается, его сборку необходимо разрешить с помощью конфигурационного параметра —with-http_stub_status_module и активировать с помощью:
 ```
 location /status {
   stub_status on;
@@ -215,12 +215,12 @@ location /status {
 
 ##Безопасность
 ###Активация базовой аунтификации
-Для начала вам потребуется создать пароль и сохранить его в обычной текстовом файле: 
+Для начала вам потребуется создать пароль и сохранить его в обычной текстовом файле:
 ```
 имя:пароль
 ```
 
-Затем установить найтройки для server/location блока, который необходимо защитить: 
+Затем установить найтройки для server/location блока, который необходимо защитить:
 ```
 auth_basic "This is Protected";
 auth_basic_user_file /path/to/password-file;
@@ -232,14 +232,14 @@ location /local {
   deny all;
   ...
 }
-```	
-###Защита SSL настроек 
+```
+###Защита SSL настроек
 * Отключить SSLv3, если он включен по умолчанию. Это предотвратит [POODLE SSL Attack](http://nginx.com/blog/nginx-poodle-ssl/).
 * Шифры, которые наилучшим образом обеспечат защиту. [Mozilla Server Side TLS and Nginx](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx).
 
 		# don’t use SSLv3 ref: POODLE CVE-2014-356 - http://nginx.com/blog/nginx-poodle-ssl/
 		ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;  
-		
+
 		# Ciphers set to best allow protection from Beast, while providing forwarding secrecy, as defined by Mozilla (Intermediate Set) - https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx
 		    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
 		ssl_prefer_server_ciphers  on;
@@ -251,9 +251,9 @@ location /local {
 location = /empty.gif {
   empty_gif;
   expires -1;
-  post_action @track; 
+  post_action @track;
 }
-	
+
 location @track {
   internal;
   proxy_pass http://tracking-backend;
@@ -261,7 +261,7 @@ location @track {
 ```
 ###Распределение ресурсов между источниками
 
-Самый простой и наиболее известный способ кросс-доменного запроса на ваш сервер: 
+Самый простой и наиболее известный способ кросс-доменного запроса на ваш сервер:
 ```
 location ~* \.(eot|ttf|woff) {
   add_header Access-Control-Allow-Origin *;
