@@ -1,4 +1,4 @@
-#Полезные шаблоны конфигов для Nginx
+# Полезные шаблоны конфигов для Nginx
 
 Переведено и дополнено на основе репозитория [nginx-conf](https://github.com/lebinh/nginx-conf) от [@lebinh](https://github.com/lebinh)
 
@@ -30,14 +30,14 @@
 - [Источники](#Источники)
 
 
-##Команды Nginx
+## Команды Nginx
 Основные команды для выполнения базовый операций во время работы Nginx.
 
 * `nginx -V` - проверить версию Nginx, его скомпилированные параметры конфигурации и установленные модули.
 * `nginx -t` - протестировать конфигурационный файл и проверить его расположение.
 * `nginx -s reload` - перезапустить конфигурационный файл без перезагрузки Nginx.
 
-##Location блок на PHP
+## Location блок на PHP
 Простой шаблон для быстрой и легкой установки PHP, FPM или CGI на ваш сайт.
 ```
 location ~ \.php$ {
@@ -49,7 +49,7 @@ location ~ \.php$ {
   fastcgi_pass unix:/path/to/php.sock;
 }
 ```
-##Rewrite и Redirection
+## Rewrite и Redirection
 ### Force www
 [Корректный способ](http://nginx.org/en/docs/http/converting_rewrite_rules.html) определить удаленный сервер по домену без *www* и перенаправить его c *www*:
 ```
@@ -67,7 +67,7 @@ server {
 ```
 *Также работает для HTTPS *
 
-###Force no-www
+### Force no-www
 Корректный способ определить удаленный сервер по домену c *www* и перенаправить его без *www*:
 ```
 server {
@@ -98,7 +98,7 @@ server {
   ...
 }
 ```
-###Force Trailing Slash
+### Force Trailing Slash
 Данная строка добавляет слэш `/` в конце каждого URL, только в том случаее если в URL нет точки или параметров. Тоесть после *example.com/index.php* или *example.com/do?some=123* слэш не поставится.  
 ```
 rewrite ^([^.\?]*[^/])$ $1/ permanent;
@@ -124,9 +124,9 @@ location /old-site {
   rewrite ^/old-site/(.*) http://example.org/new-site/$1 permanent;
 }
 ```
-##Производительность
+## Производительность
 
-###Кэширование
+### Кэширование
 Навсегда разрешить браузерам кэшировать статические содержимое. Nginx установит оба заголовка: Expires и Cache-Control.
 ```
 location /static {
@@ -141,7 +141,7 @@ location = /empty.gif {
   expires -1;
 }
 ```
-###Gzip сжатие
+### Gzip сжатие
 ```
 gzip  on;
 gzip_buffers 16 8k;
@@ -151,11 +151,24 @@ gzip_min_length 256;
 gzip_proxied any;
 gzip_vary on;
 gzip_types
-  text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml
-  text/javascript application/javascript application/x-javascript
-  text/x-json application/json application/x-web-app-manifest+json
-  text/css text/plain text/x-component
-  font/opentype application/x-font-ttf application/vnd.ms-fontobject
+  text/xml
+  application/xml
+  application/atom+xml
+  application/rss+xml
+  application/xhtml+xml
+  image/svg+xml
+  text/javascript
+  application/javascript
+  application/x-javascript
+  text/x-json
+  application/json
+  application/x-web-app-manifest+json
+  text/css
+  text/plain
+  text/x-component
+  font/opentype
+  application/x-font-ttf
+  application/vnd.ms-fontobject
   image/x-icon;
 gzip_disable "msie6";
 ```
@@ -190,7 +203,7 @@ server {
   }
 }
 ```
-###Мониторинг
+### Мониторинг
 По умолчанию [Stub Status](http://nginx.org/ru/docs/http/ngx_http_stub_status_module.html) модуль не собирается, его сборку необходимо разрешить с помощью конфигурационного параметра —with-http_stub_status_module и активировать с помощью:
 ```
 location /status {
@@ -213,8 +226,8 @@ location /status {
 
 Также для сбора статистики отлично подходит [ngxtop](https://github.com/lebinh/ngxtop).
 
-##Безопасность
-###Активация базовой аунтификации
+## Безопасность
+### Активация базовой аунтификации
 Для начала вам потребуется создать пароль и сохранить его в обычной текстовом файле:
 ```
 имя:пароль
@@ -225,7 +238,7 @@ location /status {
 auth_basic "This is Protected";
 auth_basic_user_file /path/to/password-file;
 ```
-###Открыть только локальный доступ
+### Открыть только локальный доступ
 ```
 location /local {
   allow 127.0.0.1;
@@ -233,7 +246,7 @@ location /local {
   ...
 }
 ```
-###Защита SSL настроек
+### Защита SSL настроек
 * Отключить SSLv3, если он включен по умолчанию. Это предотвратит [POODLE SSL Attack](http://nginx.com/blog/nginx-poodle-ssl/).
 * Шифры, которые наилучшим образом обеспечат защиту. [Mozilla Server Side TLS and Nginx](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx).
 
@@ -244,7 +257,7 @@ location /local {
 		    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
 		ssl_prefer_server_ciphers  on;
 
-##Прочее
+## Прочее
 ###Подзапросы после завершения
 Бывают ситуации, когда вам необходимо передать запрос на другой бэкэнд **в дополнении или после его обработки**. Первый случай -  отслеживать количество завершенных загрузок путем вызова API, после того как пользователь скачал файл. Второй случай  -отслеживать запрос, к которому вы бы хотели вернуться как можно быстрее (возможно с пустым .gif) и сделать соответствующие записи в фоновом режиме.  [**post_action**](http://wiki.nginx.org/HttpCoreModule#post_action), который позволяет вам определить подзапрос и будет отклонен по окончанию текущего запроса - является [лучшим решением](http://mailman.nginx.org/pipermail/nginx/2008-April/004524.html) для обоих вариантов.
 ```
@@ -259,7 +272,7 @@ location @track {
   proxy_pass http://tracking-backend;
 }
 ```
-###Распределение ресурсов между источниками
+### Распределение ресурсов между источниками
 
 Самый простой и наиболее известный способ кросс-доменного запроса на ваш сервер:
 ```
